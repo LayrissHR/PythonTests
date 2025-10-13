@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="bg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Python Unit Тестове от А до Я</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        scroll-behavior: smooth;
+      }
+      .prose h2 {
+        font-size: 1.875rem; /* 30px */
+        font-weight: 600;
+        margin-top: 2.5rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+      }
+      .prose h3 {
+        font-size: 1.5rem; /* 24px */
+        font-weight: 600;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+      .code-block {
+        position: relative;
+      }
+      .copy-button {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background-color: #4a5568;
+        color: white;
+        border: none;
+        padding: 0.3rem 0.6rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .copy-button:hover {
+        background-color: #2d3748;
+      }
+      .code-block pre {
+        background-color: #1f2937;
+        color: #d1d5db;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+      }
+      .code-block code .comment {
+        color: #6b7280;
+      }
+      .code-block code .keyword {
+        color: #c084fc;
+      }
+      .code-block code .string {
+        color: #a5b4fc;
+      }
+      .code-block code .function {
+        color: #67e8f9;
+      }
+      .code-block code .number {
+        color: #facc15;
+      }
+
+      /* Scrollspy styling */
+      .toc-link.active {
+        color: #3b82f6;
+        font-weight: 600;
+        border-left-color: #3b82f6;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+      <div
+        class="container mx-auto px-6 py-4 flex justify-between items-center"
+      >
+        <div class="text-2xl font-bold text-gray-800">
+          <i class="fas fa-vial mr-2 text-blue-500"></i>Python Unit Тестове
+        </div>
+        <nav class="hidden md:flex space-x-8">
+          <a href="#intro" class="text-gray-600 hover:text-blue-500"
+            >Какво е Unit Test?</a
+          >
+          <a href="#first-test" class="text-gray-600 hover:text-blue-500"
+            >Първи Тест</a
+          >
+          <a href="#assertions" class="text-gray-600 hover:text-blue-500"
+            >Проверки</a
+          >
+          <a href="#tasks" class="text-gray-600 hover:text-blue-500">Задачи</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-6 py-8">
+      <div class="flex flex-col lg:flex-row -mx-4">
+        <!-- Table of Contents -->
+        <aside class="w-full lg:w-1/4 px-4 mb-8 lg:mb-0">
+          <div class="sticky top-24">
+            <h3 class="text-lg font-semibold mb-4 text-gray-700">Съдържание</h3>
+            <nav id="toc" class="flex flex-col space-y-2">
+              <a
+                href="#intro"
+                class="toc-link border-l-2 border-transparent pl-4 py-1 text-gray-600 hover:text-blue-500"
+                >1. Какво е Unit Test?</a
+              >
+              <a
+                href="#unittest"
+                class="toc-link border-l-2 border-transparent pl-4 py-1 text-gray-600 hover:text-blue-500"
+                >2. `unittest` модулът</a
+              >
+              <a
+                href="#first-test"
+                class="toc-link border-l-2 border-transparent pl-4 py-1 text-gray-600 hover:text-blue-500"
+                >3. Вашият Първи Тест</a
+              >
+              <a
+                href="#assertions"
+                class="toc-link border-l-2 border-transparent pl-4 py-1 text-gray-600 hover:text-blue-500"
+                >4. Арсеналът на Тестера</a
+              >
+              <a
+                href="#organization"
+                class="toc-link border-l-2 border-transparent pl-4 py-1 text-gray-600 hover:text-blue-500"
+                >5. Организация на Проекта</a
+              >
+              <a
+                href="#tasks"
+                class="toc-link border-l-2 border-transparent pl-4 py-1 text-gray-600 hover:text-blue-500"
+                >6. Задачи за Упражнение</a
+              >
+            </nav>
+          </div>
+        </aside>
+
+        <!-- Tutorial Content -->
+        <main class="w-full lg:w-3/4 px-4 prose max-w-none">
+          <div class="bg-white p-8 rounded-lg shadow-lg">
+            <h1 class="text-4xl font-bold mb-4 text-gray-900">
+              Python Unit Тестове от А до Я
+            </h1>
+            <p class="text-lg text-gray-600 mb-6">
+              Добре дошли! Тук ще научите всичко необходимо, за да пишете
+              качествени тестове за вашия код – стъпка по стъпка, с много
+              примери и ясен език.
+            </p>
+
+            <!-- Section 1 -->
+            <section id="intro">
+              <h2>1. Какво е Unit Test и защо е важен?</h2>
+              <h3>Какво представлява "Unit" тестът? 🧪</h3>
+              <p>
+                Представете си, че строите къща от LEGO. Преди да започнете да
+                строите, искате да сте сигурни, че всяка отделна тухличка е
+                здрава. Unit тестът прави същото, но за вашия код. Той проверява
+                най-малката работеща част от програмата (наречена "unit") –
+                обикновено една функция или метод – дали работи точно както
+                очаквате.
+              </p>
+              <h3>Защо да си губя времето с тестове?</h3>
+              <ul class="list-disc pl-5 space-y-2 text-gray-700">
+                <li>
+                  <strong>Намирате бъгове рано:</strong> Много по-лесно е да
+                  поправите проблем в една малка функция, отколкото да го
+                  търсите в цяла сложна система.
+                </li>
+                <li>
+                  <strong>Увереност при промени:</strong> Когато трябва да
+                  промените или добавите нова функционалност, можете просто да
+                  стартирате тестовете. Ако всички минат успешно, значи не сте
+                  "счупили" нищо старо.
+                </li>
+                <li>
+                  <strong>По-добър дизайн на кода:</strong> За да може кодът ви
+                  да бъде тестван лесно, той трябва да е добре организиран – с
+                  малки, фокусирани функции.
+                </li>
+                <li>
+                  <strong>Жива документация:</strong> Тестовете служат като
+                  примери за това как трябва да се използва вашият код.
+                </li>
+              </ul>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="unittest">
+              <h2>2. `unittest` - вграденият инструмент на Python</h2>
+              <p>
+                Python идва с вградена библиотека за писане на тестове, наречена
+                `unittest`. Не е нужно да инсталирате нищо допълнително.
+                Основните концепции са:
+              </p>
+              <dl class="space-y-4">
+                <dt class="font-semibold text-gray-900">
+                  Test Case (Тестов случай):
+                </dt>
+                <dd class="pl-5 border-l-4 border-blue-200">
+                  Клас, в който групирате свързани тестове. Трябва да наследява
+                  `unittest.TestCase`.
+                </dd>
+                <dt class="font-semibold text-gray-900">
+                  Test Method (Тестов метод):
+                </dt>
+                <dd class="pl-5 border-l-4 border-blue-200">
+                  Метод вътре в класа, чието име
+                  <strong>задължително започва с `test_`</strong>.
+                </dd>
+                <dt class="font-semibold text-gray-900">
+                  Assertion (Твърдение/Проверка):
+                </dt>
+                <dd class="pl-5 border-l-4 border-blue-200">
+                  Специални методи (напр. `assertEqual()`), с които проверявате
+                  дали резултатът е очакваният. Ако проверката е грешна, тестът
+                  се проваля.
+                </dd>
+              </dl>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="first-test">
+              <h2>3. Първият ни Unit Тест (Стъпка по стъпка)</h2>
+              <p>
+                Време е за практика! Ще тестваме проста функция, която събира
+                две числа.
+              </p>
+              <h3>Стъпка 1: Кодът за тестване</h3>
+              <p>Създайте файл `calculator.py`:</p>
+              <div class="code-block">
+                <button class="copy-button" title="Копирай кода">
+                  Копирай
+                </button>
+                <pre><code class="language-python"><span class="comment"># calculator.py</span>
+
+<span class="keyword">def</span> <span class="function">add</span>(a, b):
+    <span class="string">"""Тази функция събира две числа и връща резултата."""</span>
+    <span class="keyword">if not</span> isinstance(a, (int, float)) <span class="keyword">or not</span> isinstance(b, (int, float)):
+        <span class="keyword">raise</span> TypeError(<span class="string">"И двете стойности трябва да са числа."</span>)
+    <span class="keyword">return</span> a + b
+</code></pre>
+              </div>
+              <h3>Стъпка 2: Файлът с тестовете</h3>
+              <p>В същата папка създайте `test_calculator.py`:</p>
+              <div class="code-block">
+                <button class="copy-button" title="Копирай кода">
+                  Копирай
+                </button>
+                <pre><code class="language-python"><span class="comment"># test_calculator.py</span>
+<span class="keyword">import</span> unittest
+<span class="keyword">from</span> calculator <span class="keyword">import</span> add
+
+<span class="keyword">class</span> <span class="function">TestCalculator</span>(unittest.TestCase):
+
+    <span class="keyword">def</span> <span class="function">test_add_positive_integers</span>(self):
+        <span class="string">"""Тестваме събиране на две положителни цели числа."""</span>
+        result = add(<span class="number">5</span>, <span class="number">10</span>)
+        self.assertEqual(result, <span class="number">15</span>)
+
+    <span class="keyword">def</span> <span class="function">test_add_negative_integers</span>(self):
+        <span class="string">"""Тестваме събиране на две отрицателни цели числа."""</span>
+        result = add(-<span class="number">5</span>, -<span class="number">10</span>)
+        self.assertEqual(result, -<span class="number">15</span>)
+
+    <span class="keyword">def</span> <span class="function">test_add_with_zero</span>(self):
+        <span class="string">"""Тестваме събиране с нула."""</span>
+        result = add(<span class="number">5</span>, <span class="number">0</span>)
+        self.assertEqual(result, <span class="number">5</span>)
+        
+    <span class="keyword">def</span> <span class="function">test_add_raises_type_error_for_strings</span>(self):
+        <span class="string">"""Тестваме дали функцията връща грешка при подаване на текст."""</span>
+        <span class="keyword">with</span> self.assertRaises(TypeError):
+            add(<span class="string">'пет'</span>, <span class="string">'десет'</span>)
+</code></pre>
+              </div>
+              <h3>Стъпка 3: Стартиране на тестовете</h3>
+              <p>Отворете терминал в папката с файловете и изпълнете:</p>
+              <div class="code-block">
+                <button class="copy-button" title="Копирай кода">
+                  Копирай
+                </button>
+                <pre><code class="language-bash">python -m unittest test_calculator.py
+</code></pre>
+              </div>
+              <p>Ако всичко е наред, ще видите нещо подобно:</p>
+              <div class="code-block">
+                <pre><code class="language-bash">....
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+OK
+</code></pre>
+              </div>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="assertions">
+              <h2>4. Арсеналът на тестера: Често използвани проверки</h2>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead class="bg-gray-100">
+                    <tr>
+                      <th
+                        class="py-3 px-4 font-semibold text-sm text-gray-700 border-b"
+                      >
+                        Метод
+                      </th>
+                      <th
+                        class="py-3 px-4 font-semibold text-sm text-gray-700 border-b"
+                      >
+                        Описание
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white">
+                    <tr class="hover:bg-gray-50">
+                      <td class="py-3 px-4 border-b font-mono text-sm">
+                        assertEqual(a, b)
+                      </td>
+                      <td class="py-3 px-4 border-b text-sm">
+                        Проверява дали `a == b`
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <td class="py-3 px-4 border-b font-mono text-sm">
+                        assertNotEqual(a, b)
+                      </td>
+                      <td class="py-3 px-4 border-b text-sm">
+                        Проверява дали `a != b`
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <td class="py-3 px-4 border-b font-mono text-sm">
+                        assertTrue(x)
+                      </td>
+                      <td class="py-3 px-4 border-b text-sm">
+                        Проверява дали `x` е `True`
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <td class="py-3 px-4 border-b font-mono text-sm">
+                        assertFalse(x)
+                      </td>
+                      <td class="py-3 px-4 border-b text-sm">
+                        Проверява дали `x` е `False`
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <td class="py-3 px-4 border-b font-mono text-sm">
+                        assertIsNone(x)
+                      </td>
+                      <td class="py-3 px-4 border-b text-sm">
+                        Проверява дали `x` е `None`
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <td class="py-3 px-4 border-b font-mono text-sm">
+                        assertIn(a, b)
+                      </td>
+                      <td class="py-3 px-4 border-b text-sm">
+                        Проверява дали `a` се съдържа в `b`
+                      </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50">
+                      <td class="py-3 px-4 border-b font-mono text-sm">
+                        assertRaises(exc)
+                      </td>
+                      <td class="py-3 px-4 border-b text-sm">
+                        Проверява дали се хвърля изключение `exc`
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="organization">
+              <h2>5. Организация на по-големи проекти</h2>
+              <p>
+                Когато проектът се разрасне, е добра практика тестовете да са в
+                отделна папка `tests/`.
+              </p>
+              <h3>Структура на проекта</h3>
+              <div class="code-block">
+                <button class="copy-button" title="Копирай кода">
+                  Копирай
+                </button>
+                <pre><code>my_project/
+├── my_app/
+│   ├── __init__.py
+│   ├── calculator.py
+│   └── strings.py
+└── tests/
+    ├── __init__.py
+    ├── test_calculator.py
+    └── test_strings.py
+</code></pre>
+              </div>
+              <p>
+                За да стартирате <strong>всички</strong> тестове наведнъж, от
+                главната папка (`my_project/`) изпълнете:
+              </p>
+              <div class="code-block">
+                <button class="copy-button" title="Копирай кода">
+                  Копирай
+                </button>
+                <pre><code class="language-bash">python -m unittest discover
+</code></pre>
+              </div>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="tasks">
+              <h2>6. Задачи за Упражнение</h2>
+              <p>
+                Време е да приложите наученото! За всяка задача създайте файл с
+                функция и съответния `test_` файл.
+              </p>
+              <div class="space-y-4">
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 1: Манипулация на текст
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Функция:</strong> Напишете функция
+                    `format_name(first_name, last_name)`, която приема име и
+                    фамилия и ги връща като един стринг с главни първи букви и
+                    интервал между тях (напр. "John Doe").<br />
+                    <strong>Тестове:</strong> Проверете с нормални имена, имена
+                    само с малки букви и имена с главни букви.
+                  </div>
+                </details>
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 2: Проверка за палиндром
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Функция:</strong> Напишете `is_palindrome(text)`,
+                    която връща `True`, ако думата е палиндром, и `False`, ако
+                    не е. Функцията не трябва да се влияе от главни и малки
+                    букви.<br />
+                    <strong>Тестове:</strong> Проверете с "radar", "level",
+                    "python", "A man a plan a canal Panama".
+                  </div>
+                </details>
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 3: Изчисляване на площ
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Функция:</strong> Напишете `rectangle_area(width,
+                    height)`. Ако `width` или `height` са отрицателни, хвърлете
+                    `ValueError`.<br />
+                    <strong>Тестове:</strong> Проверете с положителни числа, с
+                    нула и с отрицателни числа (използвайте `assertRaises`).
+                  </div>
+                </details>
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 4: Средна стойност
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Функция:</strong> Напишете `average(numbers)`, която
+                    намира средната стойност на числа в списък. Ако списъкът е
+                    празен, трябва да върне `None`.<br />
+                    <strong>Тестове:</strong> Проверете с нормален списък,
+                    празен списък и списък с един елемент.
+                  </div>
+                </details>
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 5: Броене на гласни
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Функция:</strong> Напишете `count_vowels(text)`,
+                    която брои гласните букви (a, e, i, o, u) в един стринг.<br />
+                    <strong>Тестове:</strong> Проверете с дума, която има
+                    гласни, и с дума без гласни (напр. "Rhythm").
+                  </div>
+                </details>
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 6: Клас `User`
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Клас:</strong> Създайте клас `User` с `username` и
+                    `email`. Добавете метод `get_info()`, който връща стринг:
+                    `Username: testuser, Email: test@example.com`.<br />
+                    <strong>Тестове:</strong> Тествайте дали `get_info()` връща
+                    правилния стринг.
+                  </div>
+                </details>
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 7: Деактивиране на потребител
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Клас:</strong> В `User` добавете `is_active` (`True`
+                    по подразбиране) и метод `deactivate()`, който го прави
+                    `False`.<br />
+                    <strong>Тестове:</strong> Проверете дали `is_active` е
+                    `True` след създаване и `False` след `deactivate()`.
+                  </div>
+                </details>
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 8: Проверка на имейл
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Функция:</strong> Напишете `is_valid_email(email)`,
+                    която проверява за наличие на `@` и `.`.<br />
+                    <strong>Тестове:</strong> Проверете с валиден имейл, имейл
+                    без `@`, имейл без `.` и празен стринг.
+                  </div>
+                </details>
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 9: Клас `BankAccount`
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Клас:</strong> Създайте `BankAccount` с `balance` и
+                    методи `deposit(amount)` и `withdraw(amount)`.<br />
+                    <strong>Тестове:</strong> Тествайте дали депозитът и
+                    тегленето работят правилно.
+                  </div>
+                </details>
+                <details class="bg-gray-50 p-4 rounded-lg">
+                  <summary class="font-semibold cursor-pointer">
+                    Задача 10: Теглене над баланса
+                  </summary>
+                  <div class="mt-2 text-gray-700">
+                    <strong>Клас:</strong> В `BankAccount`, променете
+                    `withdraw()` така, че да хвърля `ValueError` със съобщение
+                    "Insufficient funds." при опит за теглене над баланса.<br />
+                    <strong>Тестове:</strong> Проверете дали се хвърля точно
+                    тази грешка.
+                  </div>
+                </details>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white mt-12">
+      <div class="container mx-auto px-6 py-4 text-center">
+        <p>Тестването е умение, което се развива с практика. Успех!</p>
+        <p class="text-sm text-gray-400 mt-2">
+          &copy; 2024 Урок по Python Unit Тестове
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // Copy-to-clipboard functionality
+      document.querySelectorAll(".copy-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          const pre = button.parentElement.querySelector("pre");
+          const code = pre.innerText;
+
+          const textArea = document.createElement("textarea");
+          textArea.value = code;
+          // Avoid scrolling to bottom
+          textArea.style.top = "0";
+          textArea.style.left = "0";
+          textArea.style.position = "fixed";
+
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+
+          try {
+            document.execCommand("copy");
+            button.textContent = "Копирано!";
+            button.classList.add("bg-green-500");
+            setTimeout(() => {
+              button.textContent = "Копирай";
+              button.classList.remove("bg-green-500");
+            }, 2000);
+          } catch (err) {
+            console.error("Неуспешно копиране: ", err);
+          }
+
+          document.body.removeChild(textArea);
+        });
+      });
+
+      // Scrollspy functionality
+      const sections = document.querySelectorAll("section[id]");
+      const tocLinks = document.querySelectorAll("#toc a");
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const id = entry.target.getAttribute("id");
+            const tocLink = document.querySelector(`#toc a[href="#${id}"]`);
+
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+              tocLinks.forEach((link) => link.classList.remove("active"));
+              tocLink.classList.add("active");
+            }
+          });
+        },
+        { rootMargin: "-50% 0px -50% 0px", threshold: 0.5 }
+      );
+
+      sections.forEach((section) => {
+        observer.observe(section);
+      });
+    </script>
+  </body>
+</html>
