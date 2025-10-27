@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="bg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Урок: Трислоен Модел и Покритие на Кода</title>
+    <!-- Зареждане на Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Добавяме стил за неизпълнените редове код */
+      .missed-line {
+        background-color: #fee2e2; /* Светло червено */
+        display: block;
+      }
+      .covered-line {
+        background-color: #dcfce7; /* Светло зелено */
+        display: block;
+      }
+      /* Стил за Inter шрифт */
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      /* Добавяме шрифта Inter от Google Fonts */
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap");
+    </style>
+  </head>
+  <body class="bg-slate-100 text-slate-800">
+    <div class="max-w-4xl mx-auto p-6 md:p-10">
+      <!-- Заглавие -->
+      <header class="mb-10">
+        <h1 class="text-4xl font-bold text-center text-blue-700">
+          Интерактивен Урок
+        </h1>
+        <h2 class="text-2xl font-semibold text-center text-slate-600 mt-2">
+          Същност на трислойния модел и покритие на кода с тестове в Python
+        </h2>
+      </header>
+
+      <!-- Секция 1: Трислойният модел -->
+      <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h3 class="text-2xl font-bold text-blue-600 mb-4">
+          1. Какво е Трислойният Модел?
+        </h3>
+        <p class="mb-4">
+          Трислойният модел (Three-Layer Architecture) е начин за организиране
+          на кода в едно приложение. Целта е да се разделят различните "грижи"
+          или отговорности на отделни слоеве. Това прави кода по-лесен за
+          разбиране, поддръжка и тестване.
+        </p>
+        <p class="mb-4">Трите основни слоя са:</p>
+
+        <!-- Визуализация на слоевете -->
+        <div
+          class="flex flex-col md:flex-row justify-between text-center gap-4 mb-6"
+        >
+          <!-- Презентационен слой -->
+          <div class="flex-1 bg-blue-100 p-4 rounded-lg border border-blue-300">
+            <h4 class="font-bold text-lg">1. Презентационен Слой (UI)</h4>
+            <p class="text-sm">
+              Това, което потребителят вижда и с което си взаимодейства
+              (уебсайт, мобилно приложение, команден ред).
+            </p>
+            <div class="text-2xl mt-2">🖥️ / 📱</div>
+          </div>
+          <!-- Разделител -->
+          <div class="flex items-center justify-center text-slate-400 text-2xl">
+            ⬇️
+          </div>
+          <!-- Бизнес логика -->
+          <div
+            class="flex-1 bg-green-100 p-4 rounded-lg border border-green-300"
+          >
+            <h4 class="font-bold text-lg">
+              2. Слой на Бизнес Логиката (Logic)
+            </h4>
+            <p class="text-sm">
+              "Мозъкът" на приложението. Тук са правилата, изчисленията и
+              процесите, които карат приложението да работи.
+            </p>
+            <div class="text-2xl mt-2">🧠 / ⚙️</div>
+          </div>
+          <!-- Разделител -->
+          <div class="flex items-center justify-center text-slate-400 text-2xl">
+            ⬇️
+          </div>
+          <!-- Слой за данни -->
+          <div
+            class="flex-1 bg-purple-100 p-4 rounded-lg border border-purple-300"
+          >
+            <h4 class="font-bold text-lg">3. Слой за Достъп до Данни (Data)</h4>
+            <p class="text-sm">
+              Отговаря за съхраняването и извличането на данни (база данни,
+              файлове, външни API-та).
+            </p>
+            <div class="text-2xl mt-2">🗃️ / 💾</div>
+          </div>
+        </div>
+
+        <h4 class="text-xl font-semibold mb-2">Много прост пример в Python</h4>
+        <p class="mb-3">
+          Представи си, че имаме проста програма, която поздравява потребител.
+          Ето как бихме я разделили:
+        </p>
+
+        <!-- Примери за код -->
+        <pre class="bg-gray-800 text-white p-4 rounded-md overflow-x-auto mb-4">
+<code class="language-python">
+# --- 3. Слой за Достъп до Данни (data.py) ---
+# Симулираме база данни с обикновен речник (dictionary)
+def get_user_name_from_db(user_id):
+    users = {1: "Анна", 2: "Борис"}
+    return users.get(user_id, "Гост")
+
+# --- 2. Слой на Бизнес Логиката (logic.py) ---
+# Тук е правилото *как* да поздравим
+def create_greeting(name):
+    if name == "Гост":
+        return "Здравей, непознат!"
+    return f"Добре дошъл, {name}!"
+
+# --- 1. Презентационен Слой (main.py) ---
+# Това е, което потребителят "стартира"
+def show_greeting_for_user(user_id):
+    # Логиката вика данните
+    user_name = get_user_name_from_db(user_id)
+    # Презентацията вика логиката
+    message = create_greeting(user_name)
+    # Показваме резултата
+    print(message)
+
+# Симулираме стартиране
+show_greeting_for_user(1)    # Ще отпечата: Добре дошъл, Анна!
+show_greeting_for_user(99)   # Ще отпечата: Здравей, непознат!
+</code>
+</pre>
+        <p class="text-sm text-slate-600">
+          <strong>Защо го правим?</strong> Защото сега можем да тестваме
+          `create_greeting` (бизнес логиката) напълно независимо, без да се
+          притесняваме за базата данни или как се показва съобщението.
+        </p>
+      </section>
+
+      <!-- Секция 2: Покритие на кода -->
+      <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h3 class="text-2xl font-bold text-blue-600 mb-4">
+          2. Какво е Покритие на Кода (Code Coverage)?
+        </h3>
+        <p class="mb-4">
+          Когато пишем тестове (като
+          <span class="font-mono bg-slate-200 px-1 rounded">unit</span>
+          тестове), ние искаме да сме сигурни, че те проверяват възможно
+          най-много части от нашия код.
+        </p>
+        <p class="mb-4">
+          <strong>Покритието на кода</strong> е метрика (измерване), която
+          показва какъв процент от нашия код се изпълнява, докато вървят
+          автоматичните ни тестове.
+        </p>
+        <ul class="list-disc list-inside mb-4 ml-4">
+          <li>
+            <strong class="text-green-600"
+              >Високо покритие (напр. 90-100%)</strong
+            >
+            означава, че почти целият ви код е бил "докоснат" от тестовете. Това
+            дава по-голяма увереност.
+          </li>
+          <li>
+            <strong class="text-red-600">Ниско покритие (напр. 30%)</strong>
+            означава, че големи части от кода ви изобщо не се тестват и може да
+            съдържат скрити грешки.
+          </li>
+        </ul>
+        <p>
+          В Python често използваме инструменти като
+          <code class="font-mono bg-slate-200 px-1 rounded">pytest</code> с
+          добавка
+          <code class="font-mono bg-slate-200 px-1 rounded">pytest-cov</code>,
+          за да измерим това покритие.
+        </p>
+      </section>
+
+      <!-- Секция 3: Интерактивен пример -->
+      <section class="bg-white shadow-lg rounded-lg p-6 mb-8">
+        <h3 class="text-2xl font-bold text-blue-600 mb-4">
+          3. Интерактивен Пример: Тестване и Покритие
+        </h3>
+        <p class="mb-4">
+          Нека тестваме една функция от нашата "бизнес логика".
+        </p>
+
+        <!-- Пример 1: Непълно покритие -->
+        <h4 class="text-xl font-semibold mb-2">Пример 1: Непълно покритие</h4>
+        <p class="mb-3">
+          Ето една функция, която определя цена на билет според възрастта.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Код на функцията -->
+          <div>
+            <h5 class="font-semibold">Код (<code>tickets.py</code>)</h5>
+            <pre class="bg-gray-800 text-white p-4 rounded-md h-48">
+<code id="code-block-1" class="language-python">
+def get_ticket_price(age):
+    if age < 18:
+<span id="line-1-3">        return 10  # Цена за деца</span>
+    elif age >= 65:
+<span id="line-1-5">        return 12  # Цена за пенсионери</span>
+    else:
+<span id="line-1-7">        return 20  # Редовна цена</span>
+</code>
+</pre>
+          </div>
+          <!-- Код на теста -->
+          <div>
+            <h5 class="font-semibold">Тест (<code>test_tickets.py</code>)</h5>
+            <pre class="bg-gray-800 text-white p-4 rounded-md h-48">
+<code class="language-python">
+# Тестваме само случая за дете
+def test_price_for_child():
+    assert get_ticket_price(10) == 10
+</code>
+</pre>
+          </div>
+        </div>
+
+        <!-- Бутони и изход -->
+        <div class="mt-4">
+          <button
+            id="run-test-1"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mr-2"
+          >
+            1. Изпълни теста
+          </button>
+          <button
+            id="run-coverage-1"
+            class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            2. Провери покритието
+          </button>
+
+          <div
+            id="output-1"
+            class="mt-4 p-4 bg-slate-50 border rounded-lg min-h-[50px]"
+          >
+            Натисни бутон, за да видиш резултата...
+          </div>
+        </div>
+
+        <hr class="my-8" />
+
+        <!-- Пример 2: Пълно покритие -->
+        <h4 class="text-xl font-semibold mb-2">Пример 2: Пълно покритие</h4>
+        <p class="mb-3">
+          Сега, нека напишем тестове, които покриват *всички* случаи (<span
+            class="font-mono"
+            >if/elif/else</span
+          >).
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Код на функцията (същият) -->
+          <div>
+            <h5 class="font-semibold">Код (<code>tickets.py</code>)</h5>
+            <pre class="bg-gray-800 text-white p-4 rounded-md h-48">
+<code id="code-block-2" class="language-python">
+def get_ticket_price(age):
+    if age < 18:
+<span id="line-2-3">        return 10  # Цена за деца</span>
+    elif age >= 65:
+<span id="line-2-5">        return 12  # Цена за пенсионери</span>
+    else:
+<span id="line-2-7">        return 20  # Редовна цена</span>
+</code>
+</pre>
+          </div>
+          <!-- Код на теста (разширен) -->
+          <div>
+            <h5 class="font-semibold">Тест (<code>test_tickets.py</code>)</h5>
+            <pre class="bg-gray-800 text-white p-4 rounded-md h-48">
+<code class="language-python">
+def test_price_for_child():
+    assert get_ticket_price(10) == 10
+
+def test_price_for_senior():
+    assert get_ticket_price(70) == 12
+
+def test_price_for_adult():
+    assert get_ticket_price(30) == 20
+</code>
+</pre>
+          </div>
+        </div>
+
+        <!-- Бутони и изход -->
+        <div class="mt-4">
+          <button
+            id="run-test-2"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors mr-2"
+          >
+            1. Изпълни тестовете
+          </button>
+          <button
+            id="run-coverage-2"
+            class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+          >
+            2. Провери покритието
+          </button>
+
+          <div
+            id="output-2"
+            class="mt-4 p-4 bg-slate-50 border rounded-lg min-h-[50px]"
+          >
+            Натисни бутон, за да видиш резултата...
+          </div>
+        </div>
+      </section>
+
+      <!-- Заключение -->
+      <footer class="text-center text-slate-500 mt-10">
+        <p>Надяваме се, че този урок беше полезен!</p>
+      </footer>
+    </div>
+
+    <script>
+      // Функция за нулиране на стиловете в блоковетв код
+      function resetHighlights() {
+        document
+          .querySelectorAll("#code-block-1 span, #code-block-2 span")
+          .forEach((span) => {
+            span.classList.remove("missed-line", "covered-line");
+          });
+      }
+
+      // --- Интерактивност за Пример 1 ---
+      const testBtn1 = document.getElementById("run-test-1");
+      const covBtn1 = document.getElementById("run-coverage-1");
+      const output1 = document.getElementById("output-1");
+
+      testBtn1.addEventListener("click", () => {
+        resetHighlights();
+        output1.innerHTML = `
+                <p class="font-mono text-green-600">PASSED</p>
+                <p><code>test_tickets.py::test_price_for_child</code> ... <span class="text-green-600">✓</span></p>
+                <p class="font-bold mt-2">1 тест премина успешно!</p>
+            `;
+      });
+
+      covBtn1.addEventListener("click", () => {
+        resetHighlights();
+        output1.innerHTML = `
+                <p class="font-mono font-bold">Име&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Редове&nbsp;&nbsp;Липсват&nbsp;&nbsp;Покритие</p>
+                <p class="font-mono">--------------------------------------</p>
+                <p class="font-mono">tickets.py&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bold text-red-600">50%</span></p>
+                <p class="mt-2 text-red-600"><strong>Резултат:</strong> Тестът покрива само 50% от кода. Редове 5 и 7 не са изпълнени.</p>
+            `;
+        // Маркираме покритите и пропуснатите редове
+        document.getElementById("line-1-3").classList.add("covered-line");
+        document.getElementById("line-1-5").classList.add("missed-line");
+        document.getElementById("line-1-7").classList.add("missed-line");
+      });
+
+      // --- Интерактивност за Пример 2 ---
+      const testBtn2 = document.getElementById("run-test-2");
+      const covBtn2 = document.getElementById("run-coverage-2");
+      const output2 = document.getElementById("output-2");
+
+      testBtn2.addEventListener("click", () => {
+        resetHighlights();
+        output2.innerHTML = `
+                <p class="font-mono text-green-600">PASSED</p>
+                <p><code>test_tickets.py::test_price_for_child</code> ... <span class="text-green-600">✓</span></p>
+                <p><code>test_tickets.py::test_price_for_senior</code> ... <span class="text-green-600">✓</span></p>
+                <p><code>test_tickets.py::test_price_for_adult</code> ... <span class="text-green-600">✓</span></p>
+                <p class="font-bold mt-2">3 теста преминаха успешно!</p>
+            `;
+      });
+
+      covBtn2.addEventListener("click", () => {
+        resetHighlights();
+        output2.innerHTML = `
+                <p class="font-mono font-bold">Име&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Редове&nbsp;&nbsp;Липсват&nbsp;&nbsp;Покритие</p>
+                <p class="font-mono">--------------------------------------</p>
+                <p class="font-mono">tickets.py&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="font-bold text-green-600">100%</span></p>
+                <p class="mt-2 text-green-600"><strong>Резултат:</strong> Отлично! Всички редове код са покрити от тестовете.</p>
+            `;
+        // Маркираме всички като покрити
+        document.getElementById("line-2-3").classList.add("covered-line");
+        document.getElementById("line-2-5").classList.add("covered-line");
+        document.getElementById("line-2-7").classList.add("covered-line");
+      });
+    </script>
+  </body>
+</html>
