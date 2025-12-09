@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="bg">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Python Mocking 101</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Custom scrollbar for better look */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+      .code-block {
+        font-family: "Courier New", Courier, monospace;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 text-gray-800 font-sans h-screen flex flex-col md:flex-row overflow-hidden"
+  >
+    <!-- SIDEBAR -->
+    <div
+      class="w-full md:w-64 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col h-full z-20"
+    >
+      <div class="p-6 border-b border-gray-200 bg-indigo-600 text-white">
+        <h1 class="text-xl font-bold flex items-center gap-2">
+          <!-- Book Icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path
+              d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+            ></path>
+          </svg>
+          Mocking 101
+        </h1>
+        <div
+          class="mt-4 text-xs font-medium uppercase tracking-wider opacity-80"
+        >
+          Прогрес
+        </div>
+        <div class="w-full bg-indigo-800 h-2 rounded-full mt-1">
+          <div
+            id="progress-bar"
+            class="bg-green-400 h-2 rounded-full transition-all duration-500"
+            style="width: 0%"
+          ></div>
+        </div>
+        <div id="progress-text" class="text-right text-xs mt-1">
+          0% завършени
+        </div>
+      </div>
+
+      <nav id="sidebar-nav" class="flex-1 overflow-y-auto p-4 space-y-2">
+        <!-- Navigation items will be injected here via JS -->
+      </nav>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden relative">
+      <!-- TOP BAR -->
+      <header
+        class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm z-10 shrink-0"
+      >
+        <h2 id="lesson-header" class="text-lg font-semibold text-gray-800">
+          <!-- Title injected via JS -->
+        </h2>
+        <div class="flex gap-2">
+          <button
+            id="btn-prev"
+            class="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            Предишен
+          </button>
+          <button
+            id="btn-next"
+            class="px-4 py-2 text-sm bg-gray-800 text-white hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            Следващ
+            <!-- Arrow Right Icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- SCROLLABLE CONTENT AREA -->
+      <main class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50">
+        <div
+          class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 h-full"
+        >
+          <!-- LEFT COLUMN: THEORY -->
+          <div class="space-y-6">
+            <div
+              class="bg-white p-6 rounded-xl shadow-sm border border-gray-200"
+            >
+              <div
+                id="theory-content"
+                class="prose prose-indigo max-w-none text-gray-700 leading-relaxed"
+              >
+                <!-- Theory content injected via JS -->
+              </div>
+            </div>
+
+            <div
+              id="example-container"
+              class="bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-700 hidden"
+            >
+              <div
+                class="bg-gray-800 px-4 py-2 text-xs text-gray-400 font-mono border-b border-gray-700 flex items-center gap-2"
+              >
+                <!-- Code Icon -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                Пример
+              </div>
+              <pre
+                class="p-4 overflow-x-auto text-sm font-mono text-blue-300"
+              ><code id="example-code"></code></pre>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: INTERACTIVE TASK -->
+          <div class="flex flex-col h-[600px] lg:h-auto min-h-[500px]">
+            <div
+              class="bg-white rounded-xl shadow-lg border border-gray-200 flex flex-col flex-1 overflow-hidden"
+            >
+              <div class="p-4 bg-indigo-50 border-b border-indigo-100">
+                <h3
+                  class="font-bold text-indigo-900 flex items-center gap-2 mb-2"
+                >
+                  <!-- Code Icon -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                  Задача
+                </h3>
+                <p id="task-instruction" class="text-sm text-indigo-800">
+                  <!-- Instruction injected via JS -->
+                </p>
+              </div>
+
+              <div class="flex-1 relative bg-gray-900 group">
+                <textarea
+                  id="code-editor"
+                  spellcheck="false"
+                  class="w-full h-full bg-gray-900 text-gray-100 font-mono text-sm p-4 resize-none focus:outline-none leading-6 code-block"
+                ></textarea>
+
+                <div
+                  class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <button
+                    id="btn-reset"
+                    class="p-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 text-xs flex items-center gap-1"
+                    title="Reset Code"
+                  >
+                    <!-- Refresh Icon -->
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M23 4v6h-6"></path>
+                      <path d="M1 20v-6h6"></path>
+                      <path
+                        d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"
+                      ></path>
+                    </svg>
+                    Reset
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="p-4 bg-gray-50 border-t border-gray-200 flex flex-col gap-3"
+              >
+                <div class="flex items-center justify-between">
+                  <button
+                    id="btn-run"
+                    class="flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-all transform active:scale-95 bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200 shadow-md"
+                  >
+                    <!-- Play Icon -->
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="text-white fill-current"
+                    >
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    Изпълни Кода
+                  </button>
+
+                  <div
+                    id="status-error"
+                    class="hidden flex items-center gap-2 text-red-600 text-sm animate-pulse"
+                  >
+                    <!-- Alert Icon -->
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span class="font-medium">Опитайте отново</span>
+                  </div>
+
+                  <div
+                    id="status-success"
+                    class="hidden flex items-center gap-2 text-green-600 text-sm font-bold animate-bounce"
+                  >
+                    <!-- Check Icon -->
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>Браво!</span>
+                  </div>
+                </div>
+
+                <div
+                  id="hint-box"
+                  class="hidden text-xs text-gray-500 bg-yellow-50 p-2 rounded border border-yellow-200"
+                >
+                  <!-- Hint text injected via JS -->
+                </div>
+
+                <!-- Terminal Output -->
+                <div
+                  class="mt-4 font-mono text-sm bg-gray-900 text-gray-100 p-4 rounded-md min-h-[100px] border border-gray-700 shadow-inner overflow-auto"
+                >
+                  <div
+                    class="flex items-center text-gray-500 mb-2 pb-2 border-b border-gray-700"
+                  >
+                    <!-- Terminal Icon -->
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="mr-2"
+                    >
+                      <polyline points="4 17 10 11 4 5"></polyline>
+                      <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    <span>Output Console</span>
+                  </div>
+                  <div id="console-output" class="text-gray-600 italic">
+                    Очаква изпълнение...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      // --- DATA ---
+      const lessons = [
+        {
+          id: 1,
+          title: "Въведение в Mocking",
+          content: `
+                    <div class="space-y-4">
+                        <p>Добре дошли в <strong>Python Mocking 101</strong>!</p>
+                        <p>Когато тестваме код (Unit Testing), често се сблъскваме с проблем: нашият код зависи от външни системи – бази данни, API-та, файлова система или бавни мрежови заявки.</p>
+                        <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 text-blue-800">
+                            <strong>Mocking</strong> (имитиране) е техника, при която заменяме реалните, "тежки" или непредсказуеми зависимости с фалшиви обекти (Mocks), които контролираме напълно.
+                        </div>
+                        <p>В Python стандартната библиотека за това е <code>unittest.mock</code>. Най-важният инструмент в нея е класът <code>MagicMock</code>.</p>
+                    </div>
+                `,
+          codeExample: `# Вместо да правим истинска заявка:
+# response = requests.get("https://api.google.com")
+
+# Ние създаваме имитация:
+from unittest.mock import MagicMock
+
+fake_api = MagicMock()
+fake_api.get_data.return_value = {"status": "ok"}
+
+print(fake_api.get_data()) 
+# Резултат: {'status': 'ok'} (без интернет!)`,
+          task: {
+            instruction:
+              "Импортирайте MagicMock и създайте инстанция наречена 'mock_obj'.",
+            initialCode:
+              "from unittest.mock import MagicMock\n\n# Напишете кода тук\n",
+            validation: (code) =>
+              code.includes("mock_obj = MagicMock()") ||
+              code.includes("mock_obj=MagicMock()"),
+            hint: "Трябва да присвоите MagicMock() на променлива с име mock_obj.",
+          },
+        },
+        {
+          id: 2,
+          title: "Return Value (Връщана стойност)",
+          content: `
+                    <div class="space-y-4">
+                        <p>Mock обектът е като "магическа глина". Можете да го оформите да върне каквото пожелаете. Основният атрибут за това е <code>return_value</code>.</p>
+                        <p>Когато извикате Mock обекта (като функция), той ще върне стойността, която сте задали в <code>return_value</code>. Това е полезно, когато искате да симулирате успешен отговор от функция.</p>
+                    </div>
+                `,
+          codeExample: `mock = MagicMock()
+
+# Казваме на мока: "Когато те извикат, върни 42"
+mock.return_value = 42
+
+print(mock()) 
+# Output: 42
+
+# Можем да мокнем и методи
+service = MagicMock()
+service.get_user.return_value = "Ivan"
+print(service.get_user())
+# Output: Ivan`,
+          task: {
+            instruction:
+              "Създайте mock, който при извикване връща числото 100.",
+            initialCode:
+              "m = MagicMock()\n\n# Настройте return_value тук\n\nprint(m())",
+            validation: (code) =>
+              code.includes("m.return_value = 100") ||
+              code.includes("m.return_value=100"),
+            hint: "Използвайте синтаксиса: m.return_value = 100",
+          },
+        },
+        {
+          id: 3,
+          title: "Side Effect (Страничен ефект)",
+          content: `
+                    <div class="space-y-4">
+                        <p>Ами ако искаме да симулираме грешка? Или искаме мокът да връща различни стойности всеки път? Тук идва <code>side_effect</code>.</p>
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li>Ако зададете <strong>Exception</strong>, мокът ще "гръмне" с тази грешка.</li>
+                            <li>Ако зададете <strong>списък</strong> (напр. [1, 2]), мокът ще връща тези стойности последователно при всяко извикване.</li>
+                        </ul>
+                    </div>
+                `,
+          codeExample: `# Сценарий 1: Симулиране на грешка
+m = MagicMock()
+m.side_effect = TimeoutError("Server down")
+# m() -> Това ще хвърли TimeoutError
+
+# Сценарий 2: Динамични отговори
+numbers = MagicMock()
+numbers.side_effect = [10, 20, 30]
+
+print(numbers()) # 10
+print(numbers()) # 20
+print(numbers()) # 30`,
+          task: {
+            instruction:
+              "Настройте мока така, че да хвърли 'ValueError' при извикване.",
+            initialCode:
+              "mock = MagicMock()\n\n# Настройте side_effect тук\n\n# mock()",
+            validation: (code) =>
+              code.includes("side_effect = ValueError") ||
+              code.includes("side_effect=ValueError"),
+            hint: "Присвойте класа (или инстанция на) ValueError на mock.side_effect.",
+          },
+        },
+        {
+          id: 4,
+          title: "Assert Called (Проверка на извикването)",
+          content: `
+                    <div class="space-y-4">
+                        <p>При тестовете не е достатъчно само да върнем фалшиви данни. Трябва да сме сигурни, че нашият код наистина е извикал зависимостта.</p>
+                        <p><code>MagicMock</code> пази история на всичко, което се е случило с него. Можем да използваме методи като:</p>
+                        <ul class="list-disc pl-5 text-sm font-mono text-gray-700">
+                            <li>assert_called()</li>
+                            <li>assert_called_once()</li>
+                            <li>assert_called_with(arg1, arg2)</li>
+                        </ul>
+                    </div>
+                `,
+          codeExample: `mock_email = MagicMock()
+
+# Симулираме, че нашият код изпраща имейл
+def send_welcome(mailer, email):
+    mailer.send(email, "Welcome!")
+
+send_welcome(mock_email, "test@example.com")
+
+# Проверки (Assertions):
+mock_email.send.assert_called() # Минава успешно
+mock_email.send.assert_called_with("test@example.com", "Welcome!") # Проверява аргументите`,
+          task: {
+            instruction:
+              "Проверете дали мокът 'api' е извикан точно с аргумента 'data.json'.",
+            initialCode:
+              "api = MagicMock()\n\n# Симулация на извикване:\napi('data.json')\n\n# Напишете assertion тук:\n",
+            validation: (code) =>
+              code.includes("api.assert_called_with('data.json')") ||
+              code.includes('api.assert_called_with("data.json")'),
+            hint: "Използвайте метода .assert_called_with('data.json') върху обекта api.",
+          },
+        },
+        {
+          id: 5,
+          title: "Patching (Кръпване)",
+          content: `
+                    <div class="space-y-4">
+                        <p>Досега създавахме mock обекти ръчно и ги подавахме. Но в реалния код често зависимостите са импортирани вътре във функциите.</p>
+                        <p><code>patch</code> се използва, за да замени <strong>реален клас или функция</strong> с Mock за времетраенето на теста. Обикновено се използва като декоратор или контекстен мениджър ('with').</p>
+                        <div class="bg-yellow-50 p-3 rounded text-yellow-800 text-sm">
+                            <strong>Важно:</strong> Трябва да "пачвате" там, където обектът се <em>използва</em>, а не там, където е дефиниран.
+                        </div>
+                    </div>
+                `,
+          codeExample: `from unittest.mock import patch
+
+# Пример с 'with' (context manager)
+# Заменяме 'os.remove', за да не трием файлове наистина
+with patch('os.remove') as mock_remove:
+    # Тук извикваме функция, която ползва os.remove
+    delete_file("important.txt")
+    
+    # Проверяваме дали е извикан мока
+    mock_remove.assert_called_with("important.txt")`,
+          task: {
+            instruction:
+              "Използвайте 'with patch' за да замените 'time.sleep'. Използвайте alias 'mock_sleep'.",
+            initialCode:
+              "from unittest.mock import patch\nimport time\n\n# Довършете реда:\nwith patch('______') as ______:\n    time.sleep(10)",
+            validation: (code) =>
+              (code.includes("'time.sleep'") ||
+                code.includes('"time.sleep"')) &&
+              code.includes("mock_sleep"),
+            hint: "Синтаксисът е: with patch('time.sleep') as mock_sleep:",
+          },
+        },
+      ];
+
+      // --- STATE ---
+      let activeLesson = 0;
+      let lessonStatus = lessons.map(() => false);
+      let userCode = "";
+      let isCompleted = false;
+
+      // --- DOM ELEMENTS ---
+      const dom = {
+        sidebarNav: document.getElementById("sidebar-nav"),
+        progressBar: document.getElementById("progress-bar"),
+        progressText: document.getElementById("progress-text"),
+        lessonHeader: document.getElementById("lesson-header"),
+        btnPrev: document.getElementById("btn-prev"),
+        btnNext: document.getElementById("btn-next"),
+        theoryContent: document.getElementById("theory-content"),
+        exampleContainer: document.getElementById("example-container"),
+        exampleCode: document.getElementById("example-code"),
+        taskInstruction: document.getElementById("task-instruction"),
+        codeEditor: document.getElementById("code-editor"),
+        btnReset: document.getElementById("btn-reset"),
+        btnRun: document.getElementById("btn-run"),
+        statusError: document.getElementById("status-error"),
+        statusSuccess: document.getElementById("status-success"),
+        hintBox: document.getElementById("hint-box"),
+        consoleOutput: document.getElementById("console-output"),
+      };
+
+      // --- INIT ---
+      function init() {
+        renderLesson();
+        renderSidebar();
+
+        // Event Listeners
+        dom.btnPrev.addEventListener("click", () => {
+          if (activeLesson > 0) {
+            activeLesson--;
+            resetStateForLesson();
+            renderLesson();
+            renderSidebar();
+          }
+        });
+
+        dom.btnNext.addEventListener("click", () => {
+          if (activeLesson < lessons.length - 1) {
+            activeLesson++;
+            resetStateForLesson();
+            renderLesson();
+            renderSidebar();
+          }
+        });
+
+        dom.btnReset.addEventListener("click", () => {
+          userCode = lessons[activeLesson].task.initialCode;
+          dom.codeEditor.value = userCode;
+          clearStatus();
+        });
+
+        dom.btnRun.addEventListener("click", handleRunCode);
+
+        dom.codeEditor.addEventListener("input", (e) => {
+          userCode = e.target.value;
+          // Just clear status UI, keep logic state
+          dom.statusSuccess.classList.add("hidden");
+          dom.statusError.classList.add("hidden");
+          dom.btnRun.classList.remove(
+            "bg-green-600",
+            "hover:bg-green-700",
+            "shadow-green-200"
+          );
+          dom.btnRun.classList.add(
+            "bg-indigo-600",
+            "hover:bg-indigo-700",
+            "shadow-indigo-200"
+          );
+          dom.btnRun.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white fill-current"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Изпълни Кода`;
+        });
+      }
+
+      // --- LOGIC ---
+
+      function resetStateForLesson() {
+        userCode = lessons[activeLesson].task.initialCode;
+        dom.codeEditor.value = userCode;
+        isCompleted = lessonStatus[activeLesson];
+        clearStatus();
+      }
+
+      function clearStatus() {
+        dom.statusSuccess.classList.add("hidden");
+        dom.statusError.classList.add("hidden");
+        dom.hintBox.classList.add("hidden");
+        dom.consoleOutput.innerHTML =
+          '<span class="text-gray-600 italic">Очаква изпълнение...</span>';
+
+        // Reset button style
+        if (isCompleted) {
+          setSuccessButton();
+        } else {
+          dom.btnRun.classList.remove(
+            "bg-green-600",
+            "hover:bg-green-700",
+            "shadow-green-200"
+          );
+          dom.btnRun.classList.add(
+            "bg-indigo-600",
+            "hover:bg-indigo-700",
+            "shadow-indigo-200"
+          );
+          dom.btnRun.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white fill-current"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Изпълни Кода`;
+        }
+      }
+
+      function setSuccessButton() {
+        dom.btnRun.classList.remove(
+          "bg-indigo-600",
+          "hover:bg-indigo-700",
+          "shadow-indigo-200"
+        );
+        dom.btnRun.classList.add(
+          "bg-green-600",
+          "hover:bg-green-700",
+          "shadow-green-200"
+        );
+        dom.btnRun.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white fill-current"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg> Изпълнено!`;
+      }
+
+      function handleRunCode() {
+        const currentTask = lessons[activeLesson].task;
+        let isValid = false;
+
+        try {
+          isValid = currentTask.validation(userCode);
+        } catch (e) {
+          isValid = false;
+        }
+
+        if (isValid) {
+          isCompleted = true;
+          lessonStatus[activeLesson] = true;
+
+          // Update UI Success
+          dom.statusSuccess.classList.remove("hidden");
+          dom.statusError.classList.add("hidden");
+          dom.hintBox.classList.add("hidden");
+          dom.consoleOutput.innerHTML =
+            '<span class="text-green-400">>>> Success! Code passed validation.\n>>> Mock object behaved as expected.</span>';
+          setSuccessButton();
+          renderSidebar(); // Update progress bar
+        } else {
+          // Update UI Error
+          dom.statusError.classList.remove("hidden");
+          dom.statusSuccess.classList.add("hidden");
+
+          dom.hintBox.innerHTML = `💡 <strong>Подсказка:</strong> ${currentTask.hint}`;
+          dom.hintBox.classList.remove("hidden");
+          dom.consoleOutput.innerHTML =
+            '<span class="text-red-400">Error: Validation Failed. Проверете синтаксиса или логиката.</span>';
+        }
+      }
+
+      function renderSidebar() {
+        // Update Progress
+        const completedCount = lessonStatus.filter(Boolean).length;
+        const percentage = Math.round((completedCount / lessons.length) * 100);
+        dom.progressBar.style.width = `${percentage}%`;
+        dom.progressText.textContent = `${percentage}% завършени`;
+
+        // Update Nav Items
+        dom.sidebarNav.innerHTML = "";
+        lessons.forEach((lesson, index) => {
+          const btn = document.createElement("button");
+          const isActive = index === activeLesson;
+          const isDone = lessonStatus[index];
+
+          btn.className = `w-full text-left px-4 py-3 rounded-lg flex items-center justify-between transition-colors ${
+            isActive
+              ? "bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-sm"
+              : "hover:bg-gray-100 text-gray-600"
+          }`;
+
+          let checkIcon = "";
+          if (isDone) {
+            checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-500"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+          }
+
+          btn.innerHTML = `<span class="font-medium text-sm">${index + 1}. ${
+            lesson.title
+          }</span>${checkIcon}`;
+
+          btn.onclick = () => {
+            activeLesson = index;
+            resetStateForLesson();
+            renderLesson();
+            renderSidebar();
+          };
+
+          dom.sidebarNav.appendChild(btn);
+        });
+      }
+
+      function renderLesson() {
+        const lesson = lessons[activeLesson];
+
+        // Header
+        dom.lessonHeader.textContent = `Стъпка ${activeLesson + 1}: ${
+          lesson.title
+        }`;
+
+        // Buttons State
+        dom.btnPrev.disabled = activeLesson === 0;
+        dom.btnNext.disabled = activeLesson === lessons.length - 1;
+
+        // Content
+        dom.theoryContent.innerHTML = lesson.content;
+
+        // Example Code
+        if (lesson.codeExample) {
+          dom.exampleContainer.classList.remove("hidden");
+          dom.exampleCode.textContent = lesson.codeExample;
+        } else {
+          dom.exampleContainer.classList.add("hidden");
+        }
+
+        // Task
+        dom.taskInstruction.textContent = lesson.task.instruction;
+
+        // Editor is already handled by resetStateForLesson, but purely visual updates here if any
+      }
+
+      // Start App
+      init();
+    </script>
+  </body>
+</html>
